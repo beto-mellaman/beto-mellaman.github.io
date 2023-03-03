@@ -12,7 +12,7 @@ on:
   pull_request:
     branches: [ "develop" ]
 jobs:
-  run-lint:
+  deploy-main:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,34 +21,39 @@ jobs:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
 
-      - name: Lint Code Base
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: "develop"
-          VALIDATE_HTML: true
-          GITHUB_TOKEN: $SECRET_GIT_ACTIONS
+      # - name: Lint Code Base
+      #   uses: github/super-linter@v4
+      #   env:
+      #     VALIDATE_ALL_CODEBASE: false
+      #     DEFAULT_BRANCH: "develop"
+      #     VALIDATE_HTML: true
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Merge commit
+        run: |
+          git checkout main
+          git merge develop
+          git push
       # https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
-        id: open-pr
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: $SECRET_GIT_ACTIONS
-          destination_branch: "main"
-          pr_title: "[Automated] Merge develop into main"
-          pr_body: "Automated Pull Request"
-          # pr_reviewer: "beto"
-          # pr_assignee: "beto"
+      # - name: create pull request
+      #   id: open-pr
+      #   uses: repo-sync/pull-request@v2
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     destination_branch: "main"
+      #     pr_title: "[Automated] Merge develop into main"
+      #     pr_body: "Automated Pull Request"
+      #     pr_reviewer: "beto-mellaman"
+      #     pr_assignee: "beto-mellaman"
 
-      # https://github.com/marketplace/actions/enable-pull-request-automerge
-      - name: enable automerge
-        if: steps.open-pr.outputs.pr_number != ''
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: $SECRET_GIT_ACTIONS
-          pull-request-number: $steps.open-pr.outputs.pr_number
-          merge-method: merge
+      # # https://github.com/marketplace/actions/enable-pull-request-automerge
+      # - name: enable automerge
+      #   if: steps.open-pr.outputs.pr_number != ''
+      #   uses: peter-evans/enable-pull-request-automerge@v2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     pull-request-number: $steps.open-pr.outputs.pr_number
+      #     merge-method: merge
 
 
 
