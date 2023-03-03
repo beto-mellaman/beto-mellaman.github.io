@@ -27,5 +27,5 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "develop"
           VALIDATE_HTML: true
-          GITHUB_TOKEN: ${{ SECRET_GIT_ACTIONS }}
+          GITHUB_TOKEN: $SECRET_GIT_ACTIONS
 
