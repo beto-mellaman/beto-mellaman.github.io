@@ -29,5 +29,28 @@ jobs:
           VALIDATE_HTML: true
           GITHUB_TOKEN: $SECRET_GIT_ACTIONS
 
+      # https://github.com/marketplace/actions/github-pull-request-action
+      - name: create pull request
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: $SECRET_GIT_ACTIONS
+          destination_branch: "main"
+          pr_title: "[Automated] Merge develop into main"
+          pr_body: "Automated Pull Request"
+          # pr_reviewer: "beto"
+          # pr_assignee: "beto"
+
+      # https://github.com/marketplace/actions/enable-pull-request-automerge
+      - name: enable automerge
+        if: steps.open-pr.outputs.pr_number != ''
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: $SECRET_GIT_ACTIONS
+          pull-request-number: $steps.open-pr.outputs.pr_number
+          merge-method: merge
+
+
+
 
 
